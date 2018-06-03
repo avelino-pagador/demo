@@ -59,8 +59,10 @@ $(document).ready(function() {
               contentType: "application/json;charset=UTF-8"
             }).done(function() {
               window.location.reload();
-            }).fail(function() {
-              alert("Error encountered while generating project schedule.")
+            }).fail(function(error) {
+            	console.log(error);
+            	console.log(error.responseJSON.message);
+              alert("Error: " + error.responseJSON.message);
             });
           } else {
              $("#projectName").val("");

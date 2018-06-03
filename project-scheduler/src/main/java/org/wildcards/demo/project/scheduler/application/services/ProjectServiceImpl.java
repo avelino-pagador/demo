@@ -60,7 +60,6 @@ public class ProjectServiceImpl implements ProjectService {
    */
   private final TaskRepository taskRepository;
   
-  
   /**
    * 
    * @param projectRepository
@@ -90,9 +89,6 @@ public class ProjectServiceImpl implements ProjectService {
     
     return projectPage.getContent();
   }
-  
-
-
 
   /**
    * 
@@ -114,7 +110,6 @@ public class ProjectServiceImpl implements ProjectService {
     
     projectPlanService.generateSchedule(project);
   }
-
   
   /**
    * 
@@ -136,15 +131,12 @@ public class ProjectServiceImpl implements ProjectService {
     return new PageRequest(page, size);
   }
   
-
-
   /**
    * 
    */
   @Override
   @Transactional
   public void createProject(ProjectModel project) {
-    
     if (null != projectRepository.getProjectByProjectName(project.getProjectName())) {
       throw new EntityAlreadyExistsException();
     }
@@ -203,7 +195,6 @@ public class ProjectServiceImpl implements ProjectService {
     projectRepository.save(project);
     
     taskRepository.delete(task);
-    
   }
   
   /**
@@ -212,13 +203,11 @@ public class ProjectServiceImpl implements ProjectService {
   @Override
   @Transactional
   public void updateTaskToProject(Long projectId, TaskModel task) {
-    // TODO Auto-generated method stub
     Project project = getProject(projectId);
     Task repoTask = getTask(task.getId());
    
     repoTask.setTaskName(task.getTaskName());
     repoTask.setDuration(task.getDuration());
-    
     repoTask.removeDependencies();
     
     for (Long id : task.getDependencies()) {
@@ -254,6 +243,5 @@ public class ProjectServiceImpl implements ProjectService {
     }
     return project.get();
   }
-
   
 }

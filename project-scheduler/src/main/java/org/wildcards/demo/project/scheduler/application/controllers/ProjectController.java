@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.wildcards.demo.project.scheduler.application.models.ProjectModel;
-import org.wildcards.demo.project.scheduler.application.models.RequestParameter;
+import org.wildcards.demo.project.scheduler.application.models.RequestParameterModel;
 import org.wildcards.demo.project.scheduler.application.models.TaskModel;
 import org.wildcards.demo.project.scheduler.application.services.ProjectService;
 import org.wildcards.demo.project.scheduler.domain.entities.Project;
@@ -49,7 +49,7 @@ public class ProjectController {
   @GetMapping("/projects")
   public ResponseEntity<List<Project>> getProjects(
       @RequestParam(defaultValue="0") int page,
-      @RequestParam(defaultValue="10") int size) {
+      @RequestParam(defaultValue="100") int size) {
 
     return new ResponseEntity<List<Project>>(
         projectService.getProjects(page, size), HttpStatus.OK);
@@ -105,8 +105,7 @@ public class ProjectController {
       consumes=MediaType.APPLICATION_JSON_UTF8_VALUE)
   public void manageSchedule(
       @PathVariable Long projectId,
-      @RequestBody RequestParameter requestParameter) {
-    
+      @RequestBody RequestParameterModel requestParameter) {
     switch (requestParameter.getAction()) {
       case GENERATE:
         projectService.generateSchedule(projectId);
@@ -115,10 +114,7 @@ public class ProjectController {
         projectService.resetSchedule(projectId);
         break;
     }
-    
-    
   }
-  
   
   /**
    * 
@@ -131,7 +127,6 @@ public class ProjectController {
       @PathVariable Long projectId,
       @RequestBody TaskModel task) {
     projectService.addTaskToProject(projectId, task);
-    
   }
   
   /**
@@ -146,6 +141,6 @@ public class ProjectController {
       @PathVariable Long taskId,
       @RequestBody TaskModel task) {
     projectService.updateTaskToProject(projectId, task);
-    
   }
+  
 }

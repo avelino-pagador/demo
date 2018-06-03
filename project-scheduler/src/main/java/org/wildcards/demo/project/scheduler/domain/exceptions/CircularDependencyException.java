@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author user
  *
  */
-@ResponseStatus(code=HttpStatus.NOT_ACCEPTABLE, reason="Not found.")
+@ResponseStatus(code=HttpStatus.NOT_ACCEPTABLE, reason="Circular dependency exception.")
 public class CircularDependencyException extends DomainException {
 
   /**

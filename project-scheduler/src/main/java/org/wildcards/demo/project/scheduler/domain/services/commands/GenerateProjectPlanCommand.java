@@ -2,14 +2,16 @@ package org.wildcards.demo.project.scheduler.domain.services.commands;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.wildcards.demo.project.scheduler.domain.entities.Project;
 import org.wildcards.demo.project.scheduler.domain.entities.Task;
-import org.wildcards.demo.project.scheduler.domain.exceptions.InvalidTaskException;
 import org.wildcards.demo.project.scheduler.domain.repositories.ProjectRepository;
+import org.wildcards.demo.project.scheduler.domain.services.utils.TaskTraversalUtility;
 import org.wildcards.demo.project.scheduler.domain.services.utils.WorkingDaysCalculator;
 
 /**
@@ -50,28 +52,41 @@ public class GenerateProjectPlanCommand implements Command {
     
     List<Task> tasks = project.getTasks();
     
-    Task rootTask = getRootTask(tasks);
+    Task rootTask = TaskTraversalUtility.getRootTask(tasks);
+    
     rootTask.setIndex(1);
-    rootTask.setStartDate(workingDaysCalculator.add(
-        new Date(),
-        2L));
+    rootTask.setStartDate(workingDaysCalculator.add(new Date(), 2L));
     rootTask.setEndDate(workingDaysCalculator.add(
         rootTask.getStartDate(), 
         rootTask.getDuration()));
     
-    ArrayList<Task> taskList = new ArrayList<Task>();
+    Set<Task> taskList = new HashSet<Task>();
     traverse(taskList, rootTask, tasks);
     
     taskList.forEach( task -> {
-      System.out.println(task);
+      if (1 < task.getDependencies().size()) {
+        task.setStartDate(getMaxEndDate(task.getStartDate(), task.getDependencies()));
+        task.setEndDate(workingDaysCalculator.add(task.getStartDate(), task.getDuration()));
+      }
     });
     
     projectRepository.save(project);
   }
 
-  
-  
-  
+  /**
+   * 
+   * @param dependencies
+   * @return
+   */
+  private Date getMaxEndDate(Date startDate, List<Task> dependencies) {
+    Date maxEndDate = startDate;
+    for (Task task : dependencies) {
+      maxEndDate = workingDaysCalculator.maxDate(maxEndDate, task.getEndDate());
+    }
+    maxEndDate = workingDaysCalculator.add(maxEndDate, 2l);
+    return maxEndDate;
+  }
+
   /**
    * 
    * @param taskList
@@ -79,13 +94,13 @@ public class GenerateProjectPlanCommand implements Command {
    * @param tasks
    */
   private void traverse(
-      ArrayList<Task> taskList, 
+      Set<Task> taskList, 
       Task task, 
       List<Task> tasks) {
     
     taskList.add(task);
     
-    getDependents(task, tasks).forEach( t -> {
+    TaskTraversalUtility.getDependents(task, tasks).forEach( t -> {
       setupTask(
           t, 
           workingDaysCalculator.add(task.getEndDate(), 2L), 
@@ -108,45 +123,20 @@ public class GenerateProjectPlanCommand implements Command {
     task.setEndDate(workingDaysCalculator.add(startDate, task.getDuration()));
   }
 
-  /**
-   * 
-   * @param task
-   * @param tasks
-   * @return
-   */
-  private List<Task> getDependents(Task task, List<Task> tasks) {
-    List<Task> dependentTasks = new ArrayList<>();
-    tasks.forEach(t -> {
-      if (t.dependsOn(task)) {
-        dependentTasks.add(t);
-      }
-    });
-    return dependentTasks;
-  }
-
-
-  /**
-   * 
-   * @param tasks
-   * @return
-   */
-  private Task getRootTask(List<Task> tasks) {
-    List<Task> independentTasks = new ArrayList<>();
-    tasks.forEach(task -> {
-      if (!task.hasDependency()) {
-        independentTasks.add(task);
-      }
-    });
-    
-    if (independentTasks.isEmpty()) {
-      throw new InvalidTaskException();
-    }
-    
-    if (1 < independentTasks.size()) {
-      throw new InvalidTaskException();
-    }
-    
-    return independentTasks.get(0);
-  }
+//  /**
+//   * 
+//   * @param task
+//   * @param tasks
+//   * @return
+//   */
+//  private List<Task> getDependents(Task task, List<Task> tasks) {
+//    List<Task> dependentTasks = new ArrayList<>();
+//    tasks.forEach(t -> {
+//      if (t.dependsOn(task)) {
+//        dependentTasks.add(t);
+//      }
+//    });
+//    return dependentTasks;
+//  }
   
 }

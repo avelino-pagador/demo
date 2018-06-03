@@ -42,7 +42,6 @@ public class ViewController {
         .collect(Collectors.toList());
     
     model.addAttribute("projects", projects);
-
     
     return "viewProjects";
   }

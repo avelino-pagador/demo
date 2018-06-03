@@ -28,6 +28,11 @@ public class WorkingDaysCalculatorTest {
   /**
    * 
    */
+  private Date endDate;
+  
+  /**
+   * 
+   */
   private Date resultDate;
   
   /**
@@ -78,5 +83,29 @@ public class WorkingDaysCalculatorTest {
     resultDate = workingdayCalculator.add(startDate, duration);
     
     assertEquals(expectedDate, resultDate);
+  }
+  
+  @Test
+  public void maxDateShouldReturnFirstDate() throws Exception {
+    startDate = new Date(2018-1900, 00, 01);
+    endDate = new Date(2017-1900, 00, 12);
+    expectedDate = new Date(2018-1900, 00, 01);
+    
+    resultDate = workingdayCalculator.maxDate(startDate, endDate);
+    
+    assertEquals(expectedDate, resultDate);
+    
+  }
+  
+  @Test
+  public void maxDateShouldReturnSecondDate() throws Exception {
+    startDate = new Date(2018-1900, 00, 01);
+    endDate = new Date(2017-1900, 00, 12);
+    expectedDate = new Date(2018-1900, 00, 01);
+    
+    resultDate = workingdayCalculator.maxDate(endDate, startDate);
+    
+    assertEquals(expectedDate, resultDate);
+    
   }
 }
