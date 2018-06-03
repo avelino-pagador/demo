@@ -81,20 +81,20 @@ public class TaskDependencyValidationServiceImpl implements TaskDependencyValida
 //    
 //  }
 
-  /**
-   * 
-   * @param task
-   * @param tasks
-   * @return
-   */
-  private Set<Task> getDependentTasks(Task task, List<Task> tasks) {
-    Set<Task> dependentTasks = new HashSet<>();
-    tasks.forEach(t -> {
-     if (t.dependsOn(task)) {
-       dependentTasks.add(t);
-     }
-    });
-    return dependentTasks;
-  }
+//  /**
+//   * 
+//   * @param task
+//   * @param tasks
+//   * @return
+//   */
+//  private Set<Task> getDependentTasks(Task task, List<Task> tasks) {
+//    Set<Task> dependentTasks = new HashSet<>();
+//    tasks.forEach(t -> {
+//     if (t.dependsOn(task)) {
+//       dependentTasks.add(t);
+//     }
+//    });
+//    return dependentTasks;
+//  }
 
 }

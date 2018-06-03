@@ -55,7 +55,7 @@ public class GenerateProjectPlanCommand implements Command {
     Task rootTask = TaskTraversalUtility.getRootTask(tasks);
     
     rootTask.setIndex(1);
-    rootTask.setStartDate(workingDaysCalculator.add(new Date(), 2L));
+    rootTask.setStartDate(workingDaysCalculator.add(new Date(), 1L));
     rootTask.setEndDate(workingDaysCalculator.add(
         rootTask.getStartDate(), 
         rootTask.getDuration()));

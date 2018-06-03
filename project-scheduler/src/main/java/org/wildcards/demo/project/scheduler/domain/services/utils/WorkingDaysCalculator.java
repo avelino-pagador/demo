@@ -21,12 +21,20 @@ public class WorkingDaysCalculator {
    */
   public Date add(Date date, Long duration) {    
     LocalDate endDate = new LocalDate(date.getTime());
-    for (int i=0; i<duration-1; i++) {
-      endDate = endDate.plusDays(1);
+    if (duration > 1) {
+      for (int i=0; i<duration-1; i++) {
+        endDate = endDate.plusDays(1);
+        if (endDate.getDayOfWeek()>5) {
+          endDate = endDate.plusDays(2);
+        }
+      }
+    } else {
+      // if start date is a weekend
       if (endDate.getDayOfWeek()>5) {
         endDate = endDate.plusDays(2);
       }
     }
+    
     return endDate.toDate();
   }
 
