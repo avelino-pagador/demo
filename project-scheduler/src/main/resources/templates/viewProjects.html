@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Scheduler</title>
+
+    <link data-th-href="@{/webjars/bulma/0.6.0/css/bulma.css}" rel="stylesheet">
+    <link rel="stylesheet" data-th-href="@{/webjars/font-awesome/4.7.0/css/font-awesome.min.css}"/>
+    <script data-th-src="@{/webjars/timeago.js/3.0.0/dist/timeago.js}"></script>
+    <script data-th-src="@{/webjars/jquery/3.3.1/dist/jquery.js}"></script>
+    <script src="js/project.js"></script>
+  </head>
+  <body>
+    <section class="hero is-primary is-bold">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;Project Scheduler
+                </h1>
+            </div>
+        </div>
+    </section>
+    <section class="section">
+      <h2 class="title">Add a new project</h2>
+<!--       <form> -->
+          <div class="field is-horizontal is-grouped">
+              <div class="field-body">
+                  <div class="field">
+                      <p class="control is-expanded">
+                          <input id="projectName" class="input" type="text" placeholder="Project">
+                      </p>
+                  </div>
+                  <div class="field">
+                      <p class="control is-expanded">
+                          <input id="projectDescription" class="input" type="text" placeholder="Description">
+                      </p>
+                  </div>
+                  <div class="control">
+                      <button id="addProject" class="button is-primary">
+                        <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;Add
+                      </button>
+                  </div>
+                  &nbsp;
+                  <div class="control">
+                      <button id="clearProject" class="button is-danger">
+                           <i class="fa fa-eraser" aria-hidden="true"></i>&nbsp;Clear
+                      </button>
+                  </div>
+              </div>
+          </div>
+<!--       </form> -->
+    </section>
+<section th:id="'section' + ${project.id}" data-th-each="project : ${projects}" class="section">
+    <div class="container">
+      
+        <h1 class="subtitle">[[${project.projectName}]] / [[${project.projectDescription}]]</h1>
+        <button id="generateSchedule" class="button is-primary generate-schedule" th:attr="projectId=${project.id}">
+          <i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;Generate Schedule</button>
+        <button id="resetSchedule" class="button is-danger reset-schedule" th:attr="projectId=${project.id}">
+          <i class="fa fa-undo" aria-hidden="true"></i>&nbsp;Reset Schedule
+        </button>
+        <button id="deleteProject" class="button is-danger delete-project" th:attr="projectId=${project.id}">
+          <i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Delete Project
+        </button>
+        <table class="table is-hoverable is-fullwidth">
+            <thead>
+            <th>Task</th>
+            <th>Duration</th>
+            <th>Dependencies</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            
+            <th>Action</th>
+            </thead>
+            <tbody>
+              <tr data-th-each="task : ${project.tasks}" th:id="'task-row-' + ${project.id} + '-' + ${task.id}">
+                <td th:id="'task-taskname-' + ${project.id} + '-' + ${task.id}" >[[${task.taskName}]]</td>
+                <td th:id="'task-duration-' + ${project.id} + '-' + ${task.id}">[[${task.duration}]]</td>
+                <td th:id="'task-dependencies-' + ${project.id} + '-' + ${task.id}" th:attr="dependencies=${task.dependencies}">
+                  <div class="" data-th-each="dependency : ${task.dependencies}">[[${dependency.taskName}]]</div>
+                </td>
+                <td>[[${task.startDate}]]</td>
+                <td>[[${task.endDate}]]</td>
+                <td>
+                  <button class="button is-primary edit-task" th:attr="projectId=${project.id},taskId=${task.id}">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                  </button>
+                  <button class="button is-danger delete-task" th:attr="projectId=${project.id},taskId=${task.id}">
+                    <i class="fa fa-remove" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+              
+            <tr th:id="'add-task-' + ${project.id}" style="display:none;background:#F0F0F0;">
+              <td>
+                <input th:id="'task-name-' + ${project.id}" class="input" type="text" placeholder="Task name">
+              </td>
+              <td>
+                <input th:id="'task-duration-' + ${project.id}" class="input" type="number" placeholder="Duration">
+              </td>
+              <td>
+                <select th:id="'task-dependencies-' + ${project.id}" name="task-dependencies" class="input" multiple="multiple" size="5" style="height: 100%;">
+                  <option data-th-each="task : ${project.tasks}" th:attr="value=${task.id}">[[${task.taskName}]]</option>
+                </select>
+              </td>
+              <td></td>
+              <td></td>
+              <td>
+                 <button class="button is-primary save-add-task" th:attr="projectId=${project.id}">
+                   <i class="fa fa-save" aria-hidden="true"></i>
+                 </button>
+                 <button class="button is-danger reset-add-task" th:attr="projectId=${project.id}">
+                   <i class="fa fa-undo" aria-hidden="true"></i>
+                 </button>
+                 <button th:id="'hide-add-task-' + ${project.id}" class="button is-danger hide-add-task" th:attr="projectId=${project.id}">
+                    <i class="fa fa-remove" aria-hidden="true"></i>
+                  </button>
+              </td>
+            </tr>
+            </tbody>
+        </table>
+        <button th:id="'show-add-task-' + ${project.id}" class="button is-info show-add-task" th:attr="projectId=${project.id}">
+          <i class="fa fa-plus" aria-hidden="true"></i>&nbsp;Add Task
+        </button>
+    </div>
+    <input id="action" type="hidden" value="" />
+    <input id="taskid" type="hidden" value="" />
+</section>
+<script>
+    var timeagoInstance = timeago();
+    var nodes = document.querySelectorAll('time');
+    timeagoInstance.render(nodes, 'en_US');
+</script>
+</body>
+</html>
